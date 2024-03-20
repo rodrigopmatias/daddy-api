@@ -14,6 +14,14 @@ var (
 	config = helpers.GetConfig()
 )
 
+func printResources(handler *router.RouterHandler) {
+	logger.Info("--- begin routes ---")
+	for _, r := range handler.ListRoutes() {
+		logger.Info(r)
+	}
+	logger.Info("--- end routes ---")
+}
+
 func main() {
 	handle := router.NewRouterHandler()
 
@@ -30,6 +38,7 @@ func main() {
 		Handler: handle,
 	}
 
+	printResources(handle)
 	logger.Infof("Server is running on http://%s", config.AppAddr)
 	if err := service.ListenAndServe(); err != nil {
 		logger.Err(err.Error())

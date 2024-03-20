@@ -8,6 +8,15 @@ import (
 	"gorm.io/gorm"
 )
 
+type Filter struct {
+	Expression string
+	Value      interface{}
+}
+
+func NewFilter(expression string, value interface{}) Filter {
+	return Filter{Expression: expression, Value: value}
+}
+
 var config = helpers.GetConfig()
 
 type _CoreController struct{}
@@ -19,4 +28,12 @@ func (_CoreController) openConnection() (*gorm.DB, *ControllerError) {
 	}
 
 	return db, nil
+}
+
+func (_CoreController) ApplyFilters(db *gorm.DB, filters ...Filter) *gorm.DB {
+	for _, filter := range filters {
+		db = db.Where(filter.Expression, filter.Value)
+	}
+
+	return db
 }
