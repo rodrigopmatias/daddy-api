@@ -1,0 +1,21 @@
+meta {
+  name: list
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{schema}}://{{service}}/v1/terminals
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "eduarda.desktop.internal"
+  }
+}
+
+vars:post-response {
+  terminalSelected: res.body.items[0].id
+}

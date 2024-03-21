@@ -1,0 +1,17 @@
+meta {
+  name: delete
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{schema}}://{{service}}/v1/terminals/{{terminalSelected}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "artur.desktop.internal"
+  }
+}

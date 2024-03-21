@@ -1,0 +1,17 @@
+meta {
+  name: retrive
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{schema}}://{{service}}/v1/terminals/{{terminalSelected}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "eduarda.desktop.internal"
+  }
+}
