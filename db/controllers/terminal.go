@@ -20,7 +20,7 @@ func (c _TerminalController) Exists(filters ...Filter) (bool, *ControllerError) 
 	}
 
 	var count int64
-	tx := c.ApplyFilters(db, filters...).Select("id").Limit(1).Model(&models.Terminal{}).Count(&count)
+	tx := c.applyFilters(db, filters...).Select("id").Limit(1).Model(&models.Terminal{}).Count(&count)
 	if tx.Error != nil {
 		return false, NewControllerError(tx.Error.Error(), http.StatusUnprocessableEntity)
 	}
@@ -57,14 +57,14 @@ func (c _TerminalController) Update(id string, values interface{}) *ControllerEr
 	return nil
 }
 
-func (c _TerminalController) List(offset int, limit int) ([]models.Terminal, *ControllerError) {
+func (c _TerminalController) List(offset int, limit int, orders []string) ([]models.Terminal, *ControllerError) {
 	db, err := c.openConnection()
 	if err != nil {
 		return nil, err
 	}
 
 	var items []models.Terminal
-	tx := db.Offset(offset).Limit(limit).Find(&items)
+	tx := c.applyOrder(db, orders...).Offset(offset).Limit(limit).Find(&items)
 	if tx.Error != nil {
 		return nil, NewControllerError(tx.Error.Error(), http.StatusInternalServerError)
 	}

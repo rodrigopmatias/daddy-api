@@ -20,7 +20,7 @@ func (c _MetricController) Exists(filters ...Filter) (bool, *ControllerError) {
 	}
 
 	var count int64
-	tx := c.ApplyFilters(db, filters...).Select("id").Limit(1).Model(&models.Metric{}).Count(&count)
+	tx := c.applyFilters(db, filters...).Select("id").Limit(1).Model(&models.Metric{}).Count(&count)
 	if tx.Error != nil {
 		return false, NewControllerError(tx.Error.Error(), http.StatusUnprocessableEntity)
 	}
@@ -35,7 +35,7 @@ func (c _MetricController) Count(filters ...Filter) (int64, *ControllerError) {
 	}
 
 	var count int64
-	tx := c.ApplyFilters(db, filters...).Select("id").Model(&models.Metric{}).Count(&count)
+	tx := c.applyFilters(db, filters...).Select("id").Model(&models.Metric{}).Count(&count)
 	if tx.Error != nil {
 		return 0, NewControllerError(tx.Error.Error(), http.StatusUnprocessableEntity)
 	}
@@ -57,14 +57,14 @@ func (c _MetricController) Update(id string, values interface{}) *ControllerErro
 	return nil
 }
 
-func (c _MetricController) List(offset int, limit int) ([]models.Metric, *ControllerError) {
+func (c _MetricController) List(offset int, limit int, order []string, filters []Filter) ([]models.Metric, *ControllerError) {
 	db, err := c.openConnection()
 	if err != nil {
 		return nil, err
 	}
 
 	var items []models.Metric
-	tx := db.Offset(offset).Limit(limit).Find(&items)
+	tx := c.applyOrder(c.applyFilters(db, filters...), order...).Offset(offset).Limit(limit).Find(&items)
 	if tx.Error != nil {
 		return nil, NewControllerError(tx.Error.Error(), http.StatusInternalServerError)
 	}
